@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
+import uk.gov.hmcts.reform.blobrouter.data.DbHelper;
 import uk.gov.hmcts.reform.blobrouter.tasks.DeleteDispatchedFilesTask;
 import uk.gov.hmcts.reform.blobrouter.tasks.DeleteRejectedFilesTask;
 import uk.gov.hmcts.reform.blobrouter.tasks.HandleRejectedFilesTask;
@@ -47,11 +48,14 @@ import static org.mockito.Mockito.verify;
         "scheduling.task.send-notifications.cron: */1 * * * * *"
     }
 )
-@ActiveProfiles("integration-test")
+@ActiveProfiles({"db-test", "integration-test"})
 public class SchedulerConfigTest {
 
     @Autowired
     private BlobServiceClient storageClient;
+
+    @Autowired
+    private DbHelper dbHelper;
 
     @SpyBean
     private LockProvider lockProvider;
@@ -60,7 +64,10 @@ public class SchedulerConfigTest {
     private TelemetryClient telemetryClient;
 
     @BeforeEach
-    void stubStorageClientCalls() {
+    void prepareStorageClientCalls() {
+        // delete any leftovers
+        dbHelper.deleteAll();
+
         // used in DeleteRejectedFiles task
         // other tasks firstly checks DB before calling storage
         given(storageClient.listBlobContainers())
