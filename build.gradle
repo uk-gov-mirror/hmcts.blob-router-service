@@ -106,6 +106,7 @@ pmd {
 }
 
 jacocoTestReport {
+  toolVersion = "0.8.5"
   executionData(test, integration)
   reports {
     xml.enabled = true
