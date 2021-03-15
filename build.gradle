@@ -189,6 +189,9 @@ dependencyManagement {
       entry 'netty-transport-native-unix-common'
     }
   }
+  dependencies {
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+  }
 }
 
 repositories {
