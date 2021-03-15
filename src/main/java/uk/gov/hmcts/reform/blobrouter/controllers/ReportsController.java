@@ -3,7 +3,11 @@ package uk.gov.hmcts.reform.blobrouter.controllers;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.blobrouter.model.out.reports.EnvelopeCountSummaryReportItem;
 import uk.gov.hmcts.reform.blobrouter.model.out.reports.EnvelopeCountSummaryReportListResponse;
 import uk.gov.hmcts.reform.blobrouter.services.report.ReportService;
@@ -18,6 +22,7 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 @CrossOrigin
 @RequestMapping(path = "/reports")
 public class ReportsController {
+
     private final ReportService reportsService;
 
     // region constructor
@@ -25,7 +30,7 @@ public class ReportsController {
         ReportService reportsService
     ) {
         this.reportsService = reportsService;
-      }
+    }
     // endregion
 
     @GetMapping(path = "/count-summary", produces = MediaType.APPLICATION_JSON_VALUE)

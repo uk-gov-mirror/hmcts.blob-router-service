@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.blobrouter.data.reports;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.blobrouter.data.envelopes.Status;
 import uk.gov.hmcts.reform.blobrouter.model.out.reports.EnvelopeCountSummaryReportItem;
 
 import java.sql.ResultSet;

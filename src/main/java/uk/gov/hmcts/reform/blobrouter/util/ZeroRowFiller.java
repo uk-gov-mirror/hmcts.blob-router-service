@@ -26,10 +26,14 @@ public class ZeroRowFiller {
             .map(ContainerMappings.Mapping::getContainer).collect(toList());
     }
 
-    public List<EnvelopeCountSummaryReportItem> fill(List<EnvelopeCountSummaryReportItem> listToFill, LocalDate date) {
+    public List<EnvelopeCountSummaryReportItem>
+        fill(List<EnvelopeCountSummaryReportItem> listToFill, LocalDate date) {
         return Stream.concat(
             listToFill.stream(),
-            missingContainers(listToFill).stream().map(container -> new EnvelopeCountSummaryReportItem(0, 0, container, date))
+            missingContainers(listToFill).stream()
+                .map(container ->
+                         new EnvelopeCountSummaryReportItem(
+                             0, 0, container, date))
         ).collect(toList());
     }
 

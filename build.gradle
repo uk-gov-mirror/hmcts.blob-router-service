@@ -158,7 +158,12 @@ dependencyCheck {
   }
 }
 
+dependencies {
+  annotationProcessor "org.springframework.boot:spring-boot-configuration-processor";
+}
+
 dependencyManagement {
+
   dependencies {
     dependencySet(group: 'com.google.guava', version: '30.1-jre') {
       entry 'guava'
@@ -188,9 +193,6 @@ dependencyManagement {
       entry 'netty-transport-native-kqueue'
       entry 'netty-transport-native-unix-common'
     }
-  }
-  dependencies {
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
   }
 }
 

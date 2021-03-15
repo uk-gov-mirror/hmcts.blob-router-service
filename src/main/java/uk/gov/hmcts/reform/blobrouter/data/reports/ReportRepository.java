@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class ReportRepository {
@@ -23,11 +22,11 @@ public class ReportRepository {
     public ReportRepository(
         NamedParameterJdbcTemplate jdbcTemplate,
         EnvelopeSummaryMapper mapper,
-        EnvelopeCountSummaryMapper SummaryMapper
+        EnvelopeCountSummaryMapper summaryMapper
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
-        this.summaryMapper = SummaryMapper;
+        this.summaryMapper = summaryMapper;
     }
 
     public List<EnvelopeSummary> getEnvelopeSummary(Instant from, Instant to) {
@@ -44,29 +43,30 @@ public class ReportRepository {
             this.mapper
         );
     }
+
     public List<EnvelopeCountSummaryReportItem> getReportFor(LocalDate date) {
         return jdbcTemplate.query(
-            "SELECT\\n\"\n" +
-                "            + \"  first_events.container AS container,\\n\"\n" +
-                "            + \"  date(first_events.createdat) AS date,\\n\"\n" +
-                "            + \"  count(*) AS received,\\n\"\n" +
-                "            + \"  SUM(CASE WHEN rejection_events.id IS NOT NULL THEN 1 ELSE 0 END) AS rejected\\n\"\n" +
-                "            + \"FROM (\\n\"\n" +
-                "            + \"  SELECT DISTINCT on (container, zipfilename)\\n\"\n" +
-                "            + \"    container, zipfilename, createdat\\n\"\n" +
-                "            + \"  FROM process_events\\n\"\n" +
-                "            + \"  ORDER BY container, zipfilename, createdat ASC\\n\"\n" +
-                "            + \") AS first_events\\n\"\n" +
-                "            + \"LEFT JOIN (\\n\"\n" +
-                "            + \"  SELECT DISTINCT on (container, zipfilename)\\n\"\n" +
-                "            + \"    id, container, zipfilename\\n\"\n" +
-                "            + \"  FROM process_events\\n\"\n" +
-                "            + \"  WHERE event IN ('DOC_FAILURE', 'FILE_VALIDATION_FAILURE', 'DOC_SIGNATURE_FAILURE')\\n\"\n" +
-                "            + \") AS rejection_events\\n\"\n" +
-                "            + \"ON rejection_events.container = first_events.container\\n\"\n" +
-                "            + \"AND rejection_events.zipfilename = first_events.zipfilename\\n\"\n" +
-                "            + \"GROUP BY first_events.container, date(first_events.createdat)\\n\"\n" +
-                "            + \"HAVING date(first_events.createdat) = :date\\n",
+            "SELECT\n"
+                + "  first_events.container AS container,\n"
+                + "  date(first_events.createdat) AS date,\n"
+                + "  count(*) AS received,\n"
+                + "  SUM(CASE WHEN rejection_events.id IS NOT NULL THEN 1 ELSE 0 END) AS rejected\n"
+                + "FROM (\n"
+                + "  SELECT DISTINCT on (container, zipfilename)\n"
+                + "    container, zipfilename, createdat\n"
+                + "  FROM process_events\n"
+                + "  ORDER BY container, zipfilename, createdat ASC\n"
+                + ") AS first_events\n"
+                + "LEFT JOIN (\n"
+                + "  SELECT DISTINCT on (container, zipfilename)\n"
+                + "    id, container, zipfilename\n"
+                + "  FROM process_events\n"
+                + "  WHERE event IN ('DOC_FAILURE', 'FILE_VALIDATION_FAILURE', 'DOC_SIGNATURE_FAILURE')\n"
+                + ") AS rejection_events\n"
+                + "ON rejection_events.container = first_events.container\n"
+                + "AND rejection_events.zipfilename = first_events.zipfilename\n"
+                + "GROUP BY first_events.container, date(first_events.createdat)\n"
+                + "HAVING date(first_events.createdat) = :date\n",
             new MapSqlParameterSource()
                 .addValue("date", Instant.from(date)),
             this.summaryMapper
