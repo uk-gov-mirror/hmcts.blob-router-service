@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.blobrouter.services.report;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.blobrouter.data.reports.ReportRepository;
 import uk.gov.hmcts.reform.blobrouter.model.out.EnvelopeSummaryItem;
+import uk.gov.hmcts.reform.blobrouter.model.out.reports.EnvelopeCountSummaryReportItem;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.blobrouter.util.TimeZones.EUROPE_LONDON_ZONE_ID;
@@ -40,6 +42,17 @@ public class ReportService {
                 s.isDeleted
             ))
             .collect(toList());
+    }
+
+    public List<EnvelopeCountSummaryReportItem> getCountFor(LocalDate date, boolean includeTestContainer) {
+        long start = System.currentTimeMillis();
+        final List<EnvelopeCountSummaryReportItem> reportResult = zeroRowFiller
+            .fill(repo.getReportFor(date).stream().map(this::fromDb).collect(toList()), date)
+            .stream()
+            .filter(it -> includeTestContainer || !Objects.equals(it.container, TEST_CONTAINER))
+            .collect(toList());
+        log.info("Count summary report took {} ms", System.currentTimeMillis() - start);
+        return reportResult;
     }
 
     private LocalDate toLocalDate(Instant instant) {
