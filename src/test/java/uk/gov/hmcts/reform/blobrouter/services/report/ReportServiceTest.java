@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.blobrouter.data.reports.EnvelopeSummary;
 import uk.gov.hmcts.reform.blobrouter.data.reports.ReportRepository;
 import uk.gov.hmcts.reform.blobrouter.model.out.EnvelopeSummaryItem;
+import uk.gov.hmcts.reform.blobrouter.util.ZeroRowFiller;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -32,9 +33,12 @@ class ReportServiceTest {
     @Mock
     private ReportRepository reportRepository;
 
+    @Mock
+    private ZeroRowFiller zeroRowFiller;
+
     @BeforeEach
     void setUp() {
-        reportService = new ReportService(reportRepository);
+        reportService = new ReportService(reportRepository, zeroRowFiller);
     }
 
     @Test

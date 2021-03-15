@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.blobrouter.services.report;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.blobrouter.data.reports.ReportRepository;
 import uk.gov.hmcts.reform.blobrouter.model.out.EnvelopeSummaryItem;
@@ -18,6 +20,10 @@ import static uk.gov.hmcts.reform.blobrouter.util.TimeZones.EUROPE_LONDON_ZONE_I
 
 @Service
 public class ReportService {
+    public static final String TEST_CONTAINER = "bulkscan";
+
+    private static final Logger log = LoggerFactory.getLogger(ReportService.class);
+
     private final ReportRepository reportRepository;
     private final ZeroRowFiller zeroRowFiller;
 
@@ -50,7 +56,7 @@ public class ReportService {
     public List<EnvelopeCountSummaryReportItem> getCountFor(LocalDate date, boolean includeTestContainer) {
         long start = System.currentTimeMillis();
         final List<EnvelopeCountSummaryReportItem> reportResult = zeroRowFiller
-            .fill(reportRepository.getReportFor(date).stream().map(this::fromDb).collect(toList()), date)
+            .fill(reportRepository.getReportFor(date), date)
             .stream()
             .filter(it -> includeTestContainer || !Objects.equals(it.container, TEST_CONTAINER))
             .collect(toList());
